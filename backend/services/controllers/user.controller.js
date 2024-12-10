@@ -1,6 +1,10 @@
 const { validationResult } = require("express-validator");
 const { createUser, findUser } = require("../queries/user.query");
-const { getHashedPassword } = require("../utilities/encription.utility");
+const {
+  getHashedPassword,
+  comparePassword,
+} = require("../utilities/encription.utility");
+const { generateToken } = require("../utilities/jwt.utility");
 
 const signupController = async (req, res, next) => {
   const errors = validationResult(req);
@@ -27,6 +31,30 @@ const signupController = async (req, res, next) => {
   }
 };
 
+const loginController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const { email, password } = req.body;
+  try {
+    const user = await findUser(email);
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    const isMatch = await comparePassword(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const token = generateToken(user);
+    res.cookie("token", token, { httpOnly: true });
+
+    return res.status(200).json({ user, token });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 module.exports = {
   signupController,
+  loginController,
 };
