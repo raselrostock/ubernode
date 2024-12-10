@@ -23,7 +23,7 @@ const signupController = async (req, res, next) => {
     });
     return res.status(201).json({ user });
   } catch (error) {
-    return next(error);
+    return res.status(500).json({ message: error.message });
   }
 };
 

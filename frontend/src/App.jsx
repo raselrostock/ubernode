@@ -1,11 +1,16 @@
 import { Route, Routes } from "react-router";
 import HomePage from "./pages/HomePage";
+import LayoutPage from "./pages/LayoutPage";
+import UserSignupPage from "./pages/UserSignupPage";
 
 function App() {
   return (
-    <div className="w-full h-screen bg-zinc-900 text-purple-600">
+    <div className="w-full min-h-screen bg-white ">
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LayoutPage />}>
+          <Route index element={<HomePage />} />
+          <Route path="user/signup" element={<UserSignupPage />} />
+        </Route>
       </Routes>
     </div>
   );
